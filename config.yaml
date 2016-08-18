@@ -1,0 +1,71 @@
+
+secrets: 'passwd.yaml'
+
+templates:
+  # This is just in a template so that it can easily be re-used in multiple tasks (for example in an rss based and discover based task)
+  # If you only have one task using your series config, you can place the configure_series plugin directly in that task rather than in a template
+  tv:
+    configure_series:
+      settings:
+        # Configure all the series options to your taste
+        quality: "<=720p"
+        path: "{{ paths.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
+      from:
+        trakt_list:
+          account: '{{ secrets.trakt.username }}'
+          list: Follow
+          type: shows
+          strip_dates: yes
+  
+  transmission:
+    download: './srv/download/series'
+
+
+
+tasks:
+  update_series:
+    #manual: yes  # You probably don't need to run this all the time, so you can launch it explicitly with the --tasks flag
+    next_trakt_episodes:
+      account: '{{ secrets.trakt.username }}'
+      list: collection
+      context: collected  # You can set this to 'collected' depending on the state of your trakt info
+      position: next
+    accept_all: yes
+    set_series_begin: yes
+  
+  series:
+    template:
+      - tv
+      - transmission
+
+    disable:
+      - torrent_alive
+    
+    headers:
+      cookie: '{{ secrets.lost.cookie }}'
+    rss: http://www.lostfilm.tv/rssdd.xml
+    manipulate:
+      - title:
+          from: url
+      - title:
+          replace:
+            regexp: 'https://www\.lostfilm\.tv/download\.php.+&((.*)((s|S)\d\d(e|E)\d\d)(.*))\.torrent'
+            format: '\2 \3 \6'
+      - title:
+          replace:
+            regexp: '\.'
+            format: ' '
+    
+    urlrewrite:
+      sitename:
+        regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
+        format: 'http://www.lostfilm.tv/download.php?\g<details>'
+
+##------------------------------------
+schedules:
+  - tasks: [series]
+    interval:
+      minutes: 30
+  - tasks: [update_series]
+    interval:
+      minutes: 180
