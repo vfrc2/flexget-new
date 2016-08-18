@@ -1,5 +1,0 @@
-paths:
-    download: './testData'
-
-trakt:
-    username: 'vfrc2'
