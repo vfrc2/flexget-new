@@ -9,18 +9,18 @@ templates:
       settings:
         # Configure all the series options to your taste
         quality: "<=720p"
-        path: "{{ paths.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
+        path: "{{ secrets.paths.series.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
           account: '{{ secrets.trakt.username }}'
           list: Follow
           type: shows
           strip_dates: yes
-  
+
   transmission:
-    download: './srv/download/series'
-
-
+    transmission:
+      host: localhost
+      port: 9091
 
 tasks:
   update_series:
@@ -60,8 +60,34 @@ tasks:
       sitename:
         regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
         format: 'http://www.lostfilm.tv/download.php?\g<details>'
+  
+  series-sort:
+    manual: true
+    filesystem:
+      path: "{{ secrets.paths.series.download }}"
+      regexp: '.*\.(avi|mkv|mp4)$'
+      recursive: yes
+    seen: local
+    all_series: 
+      parse_only: yes
 
-##------------------------------------
+    require_field: series_name
+    
+    plugin_priority:
+      set: 250
+      exist: 251
+      exec: 252
+
+    accept_all: yes
+
+    set:
+      outdir: "{{secrets.paths.series.target | re_replace('/$','')}}/{{series_name}}"
+    
+    exec:
+      - 'mkdir -p "{{outdir}}"'
+      - 'ln "{{location}}" "{{outdir}}/{{title}}{{location | pathext}}"'
+    
+#------------------------------------
 schedules:
   - tasks: [series]
     interval:
