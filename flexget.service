@@ -2,7 +2,7 @@
 Description=Flexget Daemon
 After=network.target
 
-[Service](/Service)
+[Service]
 Type=simple
 User=vfrc2
 Group=vfrc2
