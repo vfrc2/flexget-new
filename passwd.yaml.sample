@@ -1,5 +1,7 @@
 paths:
-    download: './testData'
+    series:
+        download: './srv/download/series'
+        target: './srv/series'
 
 trakt:
     username: 'vfrc2'
