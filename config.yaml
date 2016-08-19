@@ -67,16 +67,12 @@ tasks:
       path: "{{ secrets.paths.series.download }}"
       regexp: '.*\.(avi|mkv|mp4)$'
       recursive: yes
+      
     seen: local
     all_series: 
       parse_only: yes
 
     require_field: series_name
-    
-    plugin_priority:
-      set: 250
-      exist: 251
-      exec: 252
 
     accept_all: yes
 
