@@ -42,7 +42,7 @@ tasks:
       - torrent_alive
     
     headers:
-      cookie: '{{ secrets.lost.cookie }}'
+      cookie: '{{ secrets.lostfilm.cookie }}'
     rss: http://www.lostfilm.tv/rssdd.xml
     manipulate:
       - title:
@@ -60,6 +60,13 @@ tasks:
       sitename:
         regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
         format: 'http://www.lostfilm.tv/download.php?\g<details>'
+    
+    pushbullet:
+      apikey: '{{ secrets.pushbullet.apikey }}'
+      title: "[Flexget] {{task}}"
+      body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{{ quality }}{% else %}{{ title }}{% endif %}"
+      url: "{% if trakt_series_url is defined and trakt_season is defined and trakt_episode is defined %}{{ trakt_series_url }}/season/{{ trakt_season }}/episode/{{ trakt_episode }}{% endif %}"
+    
   
   series-sort:
     manual: true

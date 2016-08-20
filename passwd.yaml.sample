@@ -5,3 +5,9 @@ paths:
 
 trakt:
     username: 'vfrc2'
+
+lostfilm:
+  cookie: 'uid=00000; pass=000..0000; usess=abcd...0000;'
+
+pushbullet:
+  apikey: 'aBcd...123'
