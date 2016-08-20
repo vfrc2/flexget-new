@@ -43,7 +43,10 @@ tasks:
     
     headers:
       cookie: '{{ secrets.lostfilm.cookie }}'
-    rss: http://www.lostfilm.tv/rssdd.xml
+
+    rss: https://www.lostfilm.tv/rssdd.xml
+    verify_ssl_certificates: no
+    
     manipulate:
       - title:
           from: url
