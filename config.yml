@@ -8,7 +8,7 @@ templates:
     configure_series:
       settings:
         # Configure all the series options to your taste
-        quality: "<=720p"
+        quality: "<720p"
         path: "{{ secrets.paths.series.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
