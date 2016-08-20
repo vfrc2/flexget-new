@@ -21,6 +21,12 @@ templates:
     transmission:
       host: localhost
       port: 9091
+  
+  pushbullet:
+    pushbullet:
+      apikey: '{{ secrets.pushbullet.apikey }}'
+      title: "[Flexget] {{task}}"  
+
 
 tasks:
   update_series:
@@ -37,6 +43,7 @@ tasks:
     template:
       - tv
       - transmission
+      - pushbullet
 
     disable:
       - torrent_alive
@@ -65,8 +72,6 @@ tasks:
         format: 'http://www.lostfilm.tv/download.php?\g<details>'
     
     pushbullet:
-      apikey: '{{ secrets.pushbullet.apikey }}'
-      title: "[Flexget] {{task}}"
       body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
     
   
