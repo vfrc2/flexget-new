@@ -141,7 +141,7 @@ schedules:
   - tasks: [series]
     interval:
       minutes: 30
-  - task: [series-local, over-local]
+  - tasks: [series-local, over-local]
     interval:
       minutes: 5
   - tasks: [update_series]
