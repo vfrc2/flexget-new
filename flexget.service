@@ -4,13 +4,14 @@ After=network.target
 
 [Service]
 Type=simple
-User=vfrc2
-Group=vfrc2
+User=flexget-daemon
+Group=daemon
 UMask=000
 WorkingDirectory=/etc/flexget
 ExecStart=/usr/local/bin/flexget --logfile /dev/null daemon start
 ExecStop=/usr/local/bin/flexget daemon stop
 ExecReload=/usr/local/bin/flexget daemon reload
+Environment=PYTHON_EGG_CACHE=/tmp/
 
 [Install]
 WantedBy=multi-user.target
