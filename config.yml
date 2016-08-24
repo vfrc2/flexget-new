@@ -21,12 +21,13 @@ templates:
     transmission:
       host: localhost
       port: 9091
-  
+      
   pushbullet:
     pushbullet:
       apikey: '{{ secrets.pushbullet.apikey }}'
       title: "[Flexget] {{task}}"  
-
+      body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
+  
 
 tasks:
   update_series:
@@ -71,9 +72,40 @@ tasks:
         regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
         format: 'http://www.lostfilm.tv/download.php?\g<details>'
     
-    pushbullet:
-      body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
+  series-local:
+    template:
+      - tv
+      - transmission
+      - pushbullet
+      
+    filesystem:
+      path: "{{ secrets.paths.upload }}"
+      regexp: '.*\.(torrent)$'
+      recursive: yes
     
+    seen: local
+    
+    manipulate:
+      - title:
+          replace:
+            regexp: '(.*).torrent$'
+            format: '\1'
+      - title:
+          replace:
+            regexp: '\.'
+            format: ' '
+  
+  over-local:
+    template:
+      - transmission
+      - pushbullet
+      
+    filesystem:
+      path: "{{ secrets.paths.upload }}"
+      regexp: '.*\.(torrent)$'
+      recursive: yes
+      
+    accept_all: yes
   
   series-sort:
     manual: true
