@@ -85,6 +85,9 @@ tasks:
       regexp: '.*\.(torrent)$'
       recursive: yes
       
+    set:
+      path: "{{ secrets.paths.series.download }}"
+      
     all_series: yes
     no_entries_ok: yes
     seen: local
