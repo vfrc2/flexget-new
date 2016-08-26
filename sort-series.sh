@@ -1,7 +1,7 @@
 #!/bin/bash
 
-env=PYTHON_EGG_CACHE=/tmp
+export PYTHON_EGG_CACHE=/tmp
 
 conf=/etc/flexget/config.yml
 
-$(env) $(which flexget) -c $conf execute --task series-sort
+$(which flexget) -c $conf execute --task series-sort
