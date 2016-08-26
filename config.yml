@@ -31,6 +31,7 @@ templates:
 
 tasks:
   update_series:
+    priority: 1
     #manual: yes  # You probably don't need to run this all the time, so you can launch it explicitly with the --tasks flag
     next_trakt_episodes:
       account: '{{ secrets.trakt.username }}'
@@ -41,6 +42,7 @@ tasks:
     set_series_begin: yes
   
   series:
+    priority: 2
     template:
       - tv
       - transmission
@@ -142,12 +144,9 @@ tasks:
     
 #------------------------------------
 schedules:
-  - tasks: [series]
+  - tasks: [update_series, series]
     interval:
-      minutes: 30
+      minutes: 180
   - tasks: [series-local, over-local]
     interval:
       minutes: 5
-  - tasks: [update_series]
-    interval:
-      minutes: 180
