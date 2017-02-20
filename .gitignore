@@ -1,4 +1,4 @@
 *.sqlite
-*.log
+*.log*
 passwd.yaml
-srv
+srv/

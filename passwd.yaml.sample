@@ -1,13 +1,15 @@
-paths:
-    series:
-        download: './srv/download/series'
-        target: './srv/series'
+path:
+    torrents: './torrents'
+    series: './srv/download/series'
+    movies: './srv/download/movies'
+    over: './srv/download'
+
+nnmclub:
+    dl: 'dldldlddl'
+    uk: 'ukukukukuk'
 
 trakt:
-    username: 'vfrc2'
-
-lostfilm:
-  cookie: 'uid=00000; pass=000..0000; usess=abcd...0000;'
+    username: 'user'
 
 pushbullet:
   apikey: 'aBcd...123'

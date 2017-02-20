@@ -1,81 +1,77 @@
 
-secrets: 'passwd.yaml'
+variables: 'passwd.yaml'
 
 templates:
-  # This is just in a template so that it can easily be re-used in multiple tasks (for example in an rss based and discover based task)
-  # If you only have one task using your series config, you can place the configure_series plugin directly in that task rather than in a template
   tv:
     configure_series:
       settings:
         # Configure all the series options to your taste
-        quality: "<720p"
-        path: "{{ secrets.paths.series.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
+        # parse_only: true
+        # quality: "webdl <=720p"
+        path: "{? path.series ?}"  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
-          account: '{{ secrets.trakt.username }}'
+          account: '{? trakt.username ?}'
           list: Follow
           type: shows
           strip_dates: yes
+  nnmclub:
+    manipulate:
+      - title: 
+          replace:  
+            regexp: '.+/'
+            format: ''
+      - title: 
+          replace:  
+            regexp: '\(сезон\s+(\d+),\s+серии\s\d+-(\d).*\)'
+            format: 's\1e\2'
 
   transmission:
     transmission:
       host: localhost
       port: 9091
-      
+
   pushbullet:
     pushbullet:
-      apikey: '{{ secrets.pushbullet.apikey }}'
+      api_key: '{{ secrets.pushbullet.apikey }}'
       title: "[Flexget] {{task}}"  
-      body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
-  
+      message: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
 
 tasks:
   update_series:
     priority: 1
     #manual: yes  # You probably don't need to run this all the time, so you can launch it explicitly with the --tasks flag
     next_trakt_episodes:
-      account: '{{ secrets.trakt.username }}'
+      account: '{? trakt.username ?}'
       list: collection
       context: collected  # You can set this to 'collected' depending on the state of your trakt info
       position: next
     accept_all: yes
     set_series_begin: yes
-  
+
   series:
     priority: 2
-    template:
-      - tv
-      - transmission
-      - pushbullet
+    template: [transmission, tv, nnmclub, pushbullet]
+    rss: 'https://nnmclub.to/forum/rss2.php?h=12&f=768,769&r&uk={? nnmclub.uk ?}&dl={? nnmclub.dl ?}'
 
-    disable:
-      - torrent_alive
-    
-    headers:
-      cookie: '{{ secrets.lostfilm.cookie }}'
+  movies:
+    priority: 3
+    template: transmission
+    rss: 'https://nnmclub.to/forum/rss2.php?h=12&f=216,318,220,224,254&r&uk={? nnmclub.uk ?}&dl={? nnmclub.dl ?}'
+    accept_all: true
+    set:
+        path: "{? path.movies ?}"
 
-    rss: http://old.lostfilm.tv/rssdd.xml
-    verify_ssl_certificates: no
-    
-    manipulate:
-      - title:
-          from: url
-      - title:
-          replace:
-            regexp: 'https://www\.lostfilm\.tv/download\.php.+&((.*)((s|S)\d\d(e|E)\d\d)(.*))\.torrent'
-            format: '\2 \3 \6'
-      - title:
-          replace:
-            regexp: '\.'
-            format: ' '
-    
-    urlrewrite:
-      sitename:
-        regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
-        format: 'http://www.lostfilm.tv/download.php?\g<details>'
-    
+  over:
+    priority: 4
+    template: transmission
+    rss: 'https://nnmclub.to/forum/rss2.php?dl={? nnmclub.dl ?}&h=24&&uk={? nnmclub.uk ?}'
+    accept_all: true
+    set:
+        path: "{? path.over ?}"
+
   series-local:
-    priority: 1
+    priority: 11
     template:
       - transmission
       - pushbullet
@@ -106,7 +102,7 @@ tasks:
       
   
   over-local:
-    priority: 2
+    priority: 12
     template:
       - transmission
       - pushbullet
@@ -147,9 +143,9 @@ tasks:
     
 #------------------------------------
 schedules:
-  - tasks: [update_series, series]
-    interval:
-      minutes: 180
-  - tasks: [series-local, over-local]
-    interval:
+ - tasks: [update_series, series, movies, over]
+   interval:
+     minutes: 180
+ - tasks: [series-local, over-local]
+   interval:
       minutes: 5
