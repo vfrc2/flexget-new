@@ -1,5 +1,5 @@
 
-secrets: 'passwd.yaml'
+variables: 'passwd.yaml'
 
 templates:
   # This is just in a template so that it can easily be re-used in multiple tasks (for example in an rss based and discover based task)
@@ -9,10 +9,10 @@ templates:
       settings:
         # Configure all the series options to your taste
         quality: "<720p"
-        path: "{{ secrets.paths.series.download }}"  # This will sort your downloads if you are using one of the output plugins which supports it
+        path: "{? paths.series.download ?}"  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
-          account: '{{ secrets.trakt.username }}'
+          account: '{? trakt.username ?}'
           list: Follow
           type: shows
           strip_dates: yes
@@ -23,18 +23,21 @@ templates:
       port: 9091
       
   pushbullet:
-    pushbullet:
-      apikey: '{{ secrets.pushbullet.apikey }}'
-      title: "[Flexget] {{task}}"  
-      body: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
-  
+    notify:
+      entries:
+        title: "[Flexget] {{task}}"  
+        message: "{% if series_name is defined %}{{ tvdb_series_name|default(series_name) }} - {{ series_id }}{% if tvdb_ep_name|default(False) %} - {{ tvdb_ep_name }}{% endif %}\n{% else %}{{ title }}{% endif %}"
+        via:
+        - pushbullet:
+            api_key: '{? pushbullet.apikey ?}'
+            
 
 tasks:
   update_series:
     priority: 1
     #manual: yes  # You probably don't need to run this all the time, so you can launch it explicitly with the --tasks flag
     next_trakt_episodes:
-      account: '{{ secrets.trakt.username }}'
+      account: '{? trakt.username ?}'
       list: collection
       context: collected  # You can set this to 'collected' depending on the state of your trakt info
       position: next
@@ -52,7 +55,7 @@ tasks:
       - torrent_alive
     
     headers:
-      cookie: '{{ secrets.lostfilm.cookie }}'
+      cookie: '{? lostfilm.cookie ?}'
 
     rss: http://old.lostfilm.tv/rssdd.xml
     verify_ssl_certificates: no
@@ -71,8 +74,8 @@ tasks:
     
     urlrewrite:
       sitename:
-        regexp: 'http://lostfilm.tv/download.php\?(?P<details>.*)'
-        format: 'http://www.lostfilm.tv/download.php?\g<details>'
+        regexp: 'https://lostfilm.tv/download.php\?(?P<details>.*)'
+        format: 'https://www.lostfilm.tv/download.php?\g<details>'
     
   series-local:
     priority: 1
@@ -81,12 +84,12 @@ tasks:
       - pushbullet
       
     filesystem:
-      path: "{{ secrets.paths.upload }}"
+      path: "{? paths.upload ?}"
       regexp: '.*\.(torrent)$'
       recursive: yes
       
     transmission:
-      path: "{{ secrets.paths.series.download }}"
+      path: "{? paths.series.download ?}"
       
     all_series: yes
     no_entries_ok: yes
@@ -112,7 +115,7 @@ tasks:
       - pushbullet
       
     filesystem:
-      path: "{{ secrets.paths.upload }}"
+      path: "{? paths.upload ?}"
       regexp: '.*\.(torrent)$'
       recursive: yes
       
@@ -126,7 +129,7 @@ tasks:
   series-sort:
     manual: true
     filesystem:
-      path: "{{ secrets.paths.series.download }}"
+      path: "{? paths.series ?}"
       regexp: '.*\.(avi|mkv|mp4)$'
       recursive: yes
       
@@ -139,7 +142,7 @@ tasks:
     accept_all: yes
 
     set:
-      outdir: "{{secrets.paths.series.target | re_replace('/$','')}}/{{series_name}}"
+      outdir: "{? paths.series_target | re_replace('/$','') ?}/{{series_name}}"
     
     exec:
       - 'mkdir -p "{{outdir}}"'

@@ -1,7 +1,9 @@
 paths:
-    series:
-        download: './srv/download/series'
-        target: './srv/series'
+    upload: './upload'
+    series: './srv/download/series'
+    series_target: './srv/download/series'
+    movies: './srv/download/movies'
+    over: './srv/download'
 
 trakt:
     username: 'vfrc2'
