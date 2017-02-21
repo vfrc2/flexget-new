@@ -9,7 +9,7 @@ templates:
       settings:
         # Configure all the series options to your taste
         quality: "<720p"
-        path: "{? paths.series.download ?}"  # This will sort your downloads if you are using one of the output plugins which supports it
+        path: '{? paths.series.download ?}'  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
           account: '{? trakt.username ?}'
@@ -81,12 +81,12 @@ tasks:
       - pushbullet
       
     filesystem:
-      path: "{? paths.upload ?}"
+      path: '{? paths.upload ?}'
       regexp: '.*\.(torrent)$'
       recursive: yes
       
     transmission:
-      path: "{? paths.series.download ?}"
+      path: '{? paths.series.download ?}'
       
     all_series: yes
     no_entries_ok: yes
@@ -112,7 +112,7 @@ tasks:
       - pushbullet
       
     filesystem:
-      path: "{? paths.upload ?}"
+      path: '{? paths.upload ?}'
       regexp: '.*\.(torrent)$'
       recursive: yes
       
@@ -126,7 +126,7 @@ tasks:
   series-sort:
     manual: true
     filesystem:
-      path: "{? paths.series ?}"
+      path: '{? paths.series ?}'
       regexp: '.*\.(avi|mkv|mp4)$'
       recursive: yes
       
@@ -139,7 +139,7 @@ tasks:
     accept_all: yes
 
     set:
-      outdir: "{? paths.series_target | re_replace('/$','') ?}/{{series_name}}"
+      outdir: '{{ paths.series_target | re_replace("/$","") }}/{{series_name}}'
     
     exec:
       - 'mkdir -p "{{outdir}}"'
