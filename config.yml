@@ -57,7 +57,7 @@ tasks:
     headers:
       cookie: '{? lostfilm.cookie ?}'
 
-    rss: http://old.lostfilm.tv/rssdd.xml
+    lostfilm: yes
     verify_ssl_certificates: no
     
     manipulate:
@@ -75,7 +75,7 @@ tasks:
     urlrewrite:
       sitename:
         regexp: 'https://lostfilm.tv/download.php\?(?P<details>.*)'
-        format: 'https://www.lostfilm.tv/download.php?\g<details>'
+        format: 'https://lostfilm.tv/download.php?\g<details>'
     
   series-local:
     priority: 1
