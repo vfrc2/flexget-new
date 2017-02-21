@@ -75,7 +75,7 @@ tasks:
     urlrewrite:
       sitename:
         regexp: 'https://lostfilm.tv/download.php\?(?P<details>.*)'
-        format: 'https://www.lostfilm.tv/download.php?\g<details>'
+        format: 'http://old.lostfilm.tv/download.php?\g<details>'
     
   series-local:
     priority: 1
