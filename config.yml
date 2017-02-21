@@ -57,25 +57,8 @@ tasks:
     headers:
       cookie: '{? lostfilm.cookie ?}'
 
-    rss: http://old.lostfilm.tv/rssdd.xml
+    rss: http://retre.org/rssdd.xml
     verify_ssl_certificates: no
-    
-    manipulate:
-      - title:
-          from: url
-      - title:
-          replace:
-            regexp: 'https://www\.lostfilm\.tv/download\.php.+&((.*)((s|S)\d\d(e|E)\d\d)(.*))\.torrent'
-            format: '\2 \3 \6'
-      - title:
-          replace:
-            regexp: '\.'
-            format: ' '
-    
-    urlrewrite:
-      sitename:
-        regexp: 'https://lostfilm.tv/download.php\?(?P<details>.*)'
-        format: 'http://old.lostfilm.tv/download.php?\g<details>'
     
   series-local:
     priority: 1
