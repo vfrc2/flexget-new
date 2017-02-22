@@ -9,7 +9,7 @@ templates:
       settings:
         # Configure all the series options to your taste
         quality: "<720p"
-        path: '{? paths.series.download ?}'  # This will sort your downloads if you are using one of the output plugins which supports it
+        path: '{? paths.series ?}'  # This will sort your downloads if you are using one of the output plugins which supports it
       from:
         trakt_list:
           account: '{? trakt.username ?}'
@@ -63,7 +63,7 @@ tasks:
     manipulate:
       - title:
           replace:
-            regexp: '.*\s\((.+)\)\.\s.+\s\((.+)\)\s\[(.+)\]'
+            regexp: '.*\s\((.+)\).*\((.+)\)\s\[(.+)\]'
             format: '\1.\2.\3.torrent'
       - title:
           replace:
@@ -86,7 +86,7 @@ tasks:
       recursive: yes
       
     transmission:
-      path: '{? paths.series.download ?}'
+      path: '{? paths.series ?}'
       
     all_series: yes
     no_entries_ok: yes
